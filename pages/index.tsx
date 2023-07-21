@@ -22,21 +22,19 @@ export const instance = axios.create({
 export default function Home(): JSX.Element {
   const [text, setText] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [data, setData] = useState<any[]>([]);
+  const [prevMessages, setPrevMessages] = useState(Array);
   const [channel] = useChannel("public-chat", (message) => {
-    
     setMessages((prev) => [...prev, message]);
   });
-  const getData = async () => {
-    const res = await instance.get("/");
-  setData(res.data.docuements)
-   
-    console.log(data);
-  };
   useEffect(() => {
-    getData();
-  }, []);
-
+    fetch("http://localhost:3000/api/message", {
+      method: "GET",
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setPrevMessages(data.documents);
+      });
+  }, [messages, prevMessages]);
 
   const handleKeyDown = async (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -45,14 +43,14 @@ export default function Home(): JSX.Element {
         setText(``);
         console.log(messages);
         await instance.post("/", {
-          name:"Zxin",
-          text: text
+          name: "Zxin",
+          text: text,
         });
       } catch (error) {
         console.log(error);
       }
     }
-  }
+  };
   return (
     <main
       style={{
@@ -64,7 +62,15 @@ export default function Home(): JSX.Element {
         backgroundColor: "white",
       }}
     >
-      <div style={{ padding: "10px" }}>
+      <div
+        style={{ padding: "10px", display: "flex", flexDirection: "column" }}
+      >
+        {prevMessages &&
+          prevMessages.map((message: any) => (
+            <div className="chat chat-start">
+              <div className="chat-bubble">{message.text}</div>
+            </div>
+          ))}
         {messages.map((message) => (
           <div className="chat chat-start">
             <div className="chat-bubble">{message.data.text}</div>
@@ -85,14 +91,16 @@ export default function Home(): JSX.Element {
             borderColor: "black",
             borderWidth: 1,
             height: "50px",
-            borderRadius:"10px",
-            padding:"10px"
-        
+            borderRadius: "10px",
+            padding: "10px",
+       
           }}
           placeholder="Type something....."
           className="textarea"
           value={text}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+          onChange={(e: ChangeEvent<HTMLInputElement>) =>
+            setText(e.target.value)
+          }
           onKeyDown={handleKeyDown}
         />
       </div>
