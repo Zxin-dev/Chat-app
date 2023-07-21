@@ -1,0 +1,26 @@
+##
+POST http://localhost:3000/api/message
+content-type:application/json
+
+{
+    "name":"tsogoo",
+    "text":"today is cold"
+}
+
+###
+GET http://localhost:3000/api/message
+
+###
+DELETE http://localhost:3000/api/message/64992595471b2fd8a0666835
+
+###
+GET http://localhost:3000/api/message/649e66db8ab454cd63cedda2
+
+###
+PATCH http://localhost:3000/api/message/649e66db8ab454cd63cedda2
+content-type:application/json
+
+{
+    "name":"enkhbilguun",
+    "text":"gomo"
+}
